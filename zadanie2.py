@@ -51,10 +51,14 @@ class Car:
             self.tanked_fuel / self.tank_capacity * 100, 1))
 
 
+class EnvironmentalError(Exception):
+    pass
+
+
 class DieselCar(Car):
 
     def fill_tank(self, limit=None, liters=None):
-        raise Exception('​ Diesel fuel not available due to environmental reasons')
+        raise EnvironmentalError(" Diesel fuel not available due to environmental reasons")
 
 
 def _random_string(length=8):
@@ -81,9 +85,9 @@ def get_carpool(amount):
 get_carpool(8)
 c = Car("fiat", 30, 5)
 c.fill_tank(limit=0.5)
-c.fill_tank(liters=35)
+c.fill_tank(liters=5)
 c.fill_tank(liters=3)
 c.fill_tank()
 # c.fill_tank(limit=0.5, liters=5)
 d = DieselCar("mercedes", 30, 10)
-# d.fill_tank()
+d.fill_tank()
