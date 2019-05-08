@@ -4,17 +4,16 @@ from main.models import Task
 
 
 class TaskSerializer(serializers.HyperlinkedModelSerializer):
-    created_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False)
+    created_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, read_only=True)
     done_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", required=False, allow_null=True)
 
     class Meta:
         model = Task
         fields = ("id", "title", "done", "author_ip", "done_date", 'created_date')
+        read_only_fields = ("id", "author_ip", 'created_date')
 
-    # def create(self, validated_data):
-    #     the_task = Task.objects.create(
-    #         title=validated_data['title'],
-    #         done=validated_data['done'],
-    #         done_date=validated_data['done_date']
-    #     )
-    #     return the_task
+        extra_kwargs = {
+            'id': {'read_only': True},
+            'author_ip': {'read_only': True},
+            'created_date': {'read_only': True},
+        }
