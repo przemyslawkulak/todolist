@@ -12,6 +12,11 @@ from main.serializers import TaskSerializer
 
 
 def get_author_ip(request):
+    """
+    function to autofill author's address IP
+    :param request:
+    :return: author's IP
+    """
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         author_ip = x_forwarded_for.split(',')[0]
@@ -21,6 +26,18 @@ def get_author_ip(request):
 
 
 class TaskList(APIView):
+    """
+    '/todolist/'
+    Method Get - List of all Tasks:
+    Method Post - Creating new Task, return JSON {"task_id": <task_id>}
+    - field "title" is necessary
+    - fields "done" and "done_date" are optional
+
+    if field "done" is empty task is set as "False"
+    if fields "done" and "done_date" are not empty set as is specify
+    if field "done" is "True" and "done_date" is empty, current time is used as "done_date"
+    if field "done" is "False" and "done_date" is not empty, return HTTP 400
+    """
     def get(self, request):
         tasks = Task.objects.all()
         serializer = TaskSerializer(tasks, many=True, context={"request": request})
@@ -54,6 +71,19 @@ class TaskList(APIView):
 
 
 class TaskView(APIView):
+    """
+    ​'/todolist/<task_id>/'
+    if ID doesn't exist return HTTP 404
+    Method Get - details of Task with <task_id>
+    Method Delete - deleting Task with <task_id> - return HTTP 204
+    Method Patch - partial update of Task with <task_id>:
+    - Only fields: ​ 'title'​, 'done', 'done_date' can be changed
+
+    - if field 'done' is 'true'and field 'done_date' is empty, current time is used as "done_date"
+    - if field "done" is "False" and "done_date" is not empty, return HTTP 400
+    - if field 'done' is 'false' and "done_date" is empty, 'done_date' is erasing
+    - if field "done" is "True" and "done_date" is not empty, set values
+    """
 
     def get_object(self, pk):
         try:
